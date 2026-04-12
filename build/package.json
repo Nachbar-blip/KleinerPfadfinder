@@ -1,0 +1,12 @@
+{
+  "name": "kleinerpfadfinder-build",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Tagging-Skript fuer KleinerPfadfinder",
+  "scripts": {
+    "tag": "node tag.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.0"
+  }
+}
