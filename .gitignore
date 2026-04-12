@@ -1,0 +1,9 @@
+.env
+.claude/
+node_modules/
+KLEINER_PFADFINDER_PROMPT.md
+PFADFINDER_CLAUDE_CODE_PROMPT.md
+
+*.log
+.DS_Store
+Thumbs.db
