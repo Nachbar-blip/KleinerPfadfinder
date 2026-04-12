@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Berufsorientierungs-Fragebogen: 10 passende Ausbildungsberufe als Spektrum.">
+<title>KleinerPfadfinder &ndash; Berufsorientierung</title>
+<style>
+  :root {
+    --papier: #f7f3ea;
+    --text: #2a2620;
+    --text-weich: #5a5046;
+    --kompass-rot: #b03a2e;
+    --kompass-rot-dunkel: #8a2d24;
+    --tinten-blau: #2d4a6b;
+    --moos-gruen: #4a6b3a;
+    --sand: #d4c4a0;
+    --sand-hell: #ebe1c8;
+    --linie: #c9bea4;
+    --schatten: 0 1px 3px rgba(42, 38, 32, 0.08), 0 3px 8px rgba(42, 38, 32, 0.06);
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--papier);
+    color: var(--text);
+    line-height: 1.55;
+    font-size: 17px;
+    min-height: 100vh;
+  }
+
+  main { padding: 1.5rem 1rem 4rem; }
+
+  .container { max-width: 720px; margin: 0 auto; }
+  .container-breit { max-width: 1000px; margin: 0 auto; }
+
+  h1, h2, h3 {
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1.25;
+    margin: 0 0 0.6em;
+  }
+  h1 { font-size: 2.1rem; color: var(--kompass-rot-dunkel); }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.15rem; }
+
+  p { margin: 0 0 1em; }
+
+  button, .btn {
+    font: inherit;
+    cursor: pointer;
+    border: none;
+    padding: 0.75em 1.4em;
+    border-radius: 6px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    transition: background 0.15s, transform 0.05s;
+  }
+  button:active, .btn:active { transform: translateY(1px); }
+
+  .btn-primary {
+    background: var(--kompass-rot);
+    color: white;
+  }
+  .btn-primary:hover { background: var(--kompass-rot-dunkel); }
+  .btn-primary:disabled {
+    background: #c9bea4;
+    cursor: not-allowed;
+  }
+
+  .btn-sekundaer {
+    background: transparent;
+    color: var(--tinten-blau);
+    border: 1.5px solid var(--tinten-blau);
+  }
+  .btn-sekundaer:hover { background: var(--tinten-blau); color: white; }
+
+  .btn-leise {
+    background: transparent;
+    color: var(--text-weich);
+    padding: 0.5em 0.9em;
+    font-weight: 500;
+  }
+  .btn-leise:hover { color: var(--kompass-rot); }
+
+  .karte {
+    background: white;
+    border: 1px solid var(--linie);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: var(--schatten);
+    margin-bottom: 1rem;
+  }
+
+  /* Startseite */
+  .startseite {
+    text-align: center;
+    padding: 2rem 1rem;
+  }
+  .startseite .untertitel {
+    font-size: 1.15rem;
+    color: var(--text-weich);
+    max-width: 560px;
+    margin: 0 auto 2rem;
+  }
+  .startseite ul.leitplanken {
+    list-style: none;
+    padding: 0;
+    max-width: 480px;
+    margin: 2rem auto;
+    text-align: left;
+    font-size: 0.98rem;
+  }
+  .startseite ul.leitplanken li {
+    padding: 0.4em 0 0.4em 1.8em;
+    position: relative;
+    color: var(--text-weich);
+  }
+  .startseite ul.leitplanken li::before {
+    content: "•";
+    color: var(--moos-gruen);
+    font-weight: bold;
+    font-size: 1.4em;
+    position: absolute;
+    left: 0.4em;
+    top: -0.1em;
+  }
+
+  /* Fragebogen */
+  .fortschritt {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    color: var(--text-weich);
+    font-size: 0.92rem;
+  }
+  .fortschritt-balken {
+    flex: 1;
+    height: 4px;
+    background: var(--sand-hell);
+    border-radius: 2px;
+    margin: 0 1rem;
+    overflow: hidden;
+  }
+  .fortschritt-balken-fuell {
+    height: 100%;
+    background: var(--kompass-rot);
+    transition: width 0.3s;
+  }
+
+  .frage-titel { margin-bottom: 1.5rem; }
+
+  /* Radio-Optionen */
+  .optionen { display: flex; flex-direction: column; gap: 0.5rem; }
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    border: 1.5px solid var(--linie);
+    border-radius: 6px;
+    cursor: pointer;
+    background: white;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .option:hover { border-color: var(--tinten-blau); }
+  .option input {
+    margin-top: 0.2em;
+    accent-color: var(--kompass-rot);
+    flex-shrink: 0;
+  }
+  .option.gewaehlt {
+    border-color: var(--kompass-rot);
+    background: rgba(176, 58, 46, 0.04);
+  }
+  .option-text { flex: 1; }
+
+  /* Schieberegler */
+  .regler-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .regler-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.92rem;
+    color: var(--text-weich);
+  }
+  .regler-label .pol { font-weight: 500; }
+  input[type="range"] {
+    width: 100%;
+    accent-color: var(--tinten-blau);
+    height: 32px;
+  }
+  .regler-ausgabe {
+    font-size: 0.88rem;
+    color: var(--moos-gruen);
+    min-height: 1.2em;
+    text-align: center;
+    font-style: italic;
+  }
+
+  /* Tätigkeits-Karten (Block C) */
+  .hilfe-text {
+    color: var(--text-weich);
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+  }
+  .taetigkeiten {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  @media (min-width: 560px) {
+    .taetigkeiten { grid-template-columns: 1fr 1fr; }
+  }
+  .taetigkeit {
+    padding: 0.75rem 0.9rem;
+    border: 1.5px solid var(--linie);
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.97rem;
+  }
+  .taetigkeit:hover { border-color: var(--tinten-blau); }
+  .taetigkeit.gewaehlt {
+    border-color: var(--moos-gruen);
+    background: rgba(74, 107, 58, 0.08);
+  }
+  .taetigkeit input {
+    margin-top: 0.15em;
+    accent-color: var(--moos-gruen);
+    flex-shrink: 0;
+  }
+
+  /* Motivations-Block */
+  .motivations-hinweis {
+    font-size: 0.92rem;
+    color: var(--text-weich);
+    margin-bottom: 0.75rem;
+  }
+
+  /* Navigation unten */
+  .nav-unten {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  /* Ergebnis */
+  .ergebnis-kopf {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .ergebnis-gitter {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  @media (min-width: 680px) {
+    .ergebnis-gitter { grid-template-columns: 1fr 1fr; }
+  }
+
+  .ergebnis-karte {
+    background: white;
+    border: 1px solid var(--linie);
+    border-radius: 8px;
+    padding: 1.25rem;
+    box-shadow: var(--schatten);
+    display: flex;
+    flex-direction: column;
+  }
+  .ergebnis-karte .rang {
+    font-size: 0.82rem;
+    color: var(--kompass-rot);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+  }
+  .ergebnis-karte h3 {
+    color: var(--tinten-blau);
+    margin-bottom: 0.5rem;
+  }
+  .ergebnis-karte .beschreibung {
+    color: var(--text-weich);
+    font-size: 0.93rem;
+    margin-bottom: 0.85rem;
+  }
+  .ergebnis-karte .begruendung {
+    background: rgba(74, 107, 58, 0.08);
+    border-left: 3px solid var(--moos-gruen);
+    padding: 0.6rem 0.8rem;
+    margin-bottom: 0.85rem;
+    font-size: 0.92rem;
+    border-radius: 0 4px 4px 0;
+  }
+  .ergebnis-karte .meta {
+    font-size: 0.85rem;
+    color: var(--text-weich);
+    margin-bottom: 0.85rem;
+  }
+  .ergebnis-karte .link-mehr {
+    margin-top: auto;
+    color: var(--tinten-blau);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+  .ergebnis-karte .link-mehr:hover { text-decoration: underline; }
+
+  .ergebnis-aktionen {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .mobilitaets-hinweis {
+    background: var(--sand-hell);
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    font-size: 0.92rem;
+    color: var(--text-weich);
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  /* Fehler / leere Daten */
+  .fehler {
+    background: rgba(176, 58, 46, 0.08);
+    border: 1px solid var(--kompass-rot);
+    color: var(--kompass-rot-dunkel);
+    padding: 1rem;
+    border-radius: 6px;
+    margin: 1rem 0;
+  }
+
+  /* Druck */
+  @media print {
+    body { background: white; font-size: 11pt; }
+    .nav-unten, .ergebnis-aktionen, .btn-leise, .mobilitaets-hinweis { display: none !important; }
+    .karte, .ergebnis-karte { box-shadow: none; page-break-inside: avoid; }
+    .ergebnis-gitter { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    h1 { font-size: 1.6rem; }
+    .ergebnis-karte h3 { font-size: 1.1rem; }
+  }
+
+  /* Fokus-Stile fuer Tastatur-Navigation */
+  button:focus-visible,
+  .option:focus-visible,
+  .taetigkeit:focus-visible,
+  a:focus-visible,
+  input:focus-visible {
+    outline: 3px solid var(--tinten-blau);
+    outline-offset: 2px;
+  }
+
+  /* Hidden utility */
+  .sr-only {
+    position: absolute; width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  }
+</style>
+</head>
+<body>
+
+<main id="app" class="container">
+  <!-- Wird von JavaScript gefuellt -->
+</main>
+
+<script>
+/* ======================================================================
+   DATEN — werden in Phase 6 ersetzt durch build/berufe.json
+   ====================================================================== */
+
+// PLACEHOLDER: Inhalt von build/berufe.json wird hier eingefuegt.
+const BERUFE = [];
+
+// Roh-Beschreibungen als Nachschlagewerk (aus berufe_roh.json)
+// Wird in Phase 6 mit eingebettet.
+const BERUFE_ROH = [];
+
+/* ======================================================================
+   TAG-VOKABULAR (spiegelt build/tag.js)
+   ====================================================================== */
+
+const TAG_VOKABULAR = {
+  handwerk_material: { label: "Handwerk & Material", tags: ["holz_bearbeiten","metall_bearbeiten","stoff_verarbeiten","stein_keramik_formen","glas_bearbeiten","schmuck_fertigen","praezisionsarbeit_hand"] },
+  technik_maschinen: { label: "Technik & Maschinen", tags: ["maschine_bedienen","maschine_warten_reparieren","motor_diagnostizieren","fahrzeug_reparieren","hydraulik_pneumatik","schweissen_loeten"] },
+  elektronik_it: { label: "Elektronik & IT", tags: ["stromkreis_verdrahten","elektronik_loeten","computer_reparieren","netzwerk_einrichten","code_schreiben","datenbank_auswerten","app_website_gestalten","ki_datenanalyse"] },
+  medizin_pflege: { label: "Medizin & Pflege", tags: ["wunde_versorgen","patient_untersuchen","medikament_verabreichen","senior_pflegen","kind_medizinisch_betreuen","therapie_anleiten","zahn_behandeln"] },
+  labor_naturwissenschaft: { label: "Labor & Naturwissenschaft", tags: ["mikroskop_bedienen","probe_analysieren","experiment_durchfuehren","messdaten_dokumentieren","chemikalie_mischen"] },
+  bau_architektur: { label: "Bau & Architektur", tags: ["mauer_errichten","dach_decken","rohr_verlegen","fliesen_setzen","gebaeude_planen_zeichnen","vermessen_im_gelaende"] },
+  natur_umwelt: { label: "Natur & Umwelt", tags: ["pflanze_bestimmen_pflegen","boden_wasser_untersuchen","wald_bewirtschaften","garten_anlegen","ernte_verarbeiten"] },
+  tiere: { label: "Tiere", tags: ["tier_untersuchen_behandeln","tier_versorgen_fuettern","tier_trainieren","zuchttier_beurteilen"] },
+  gestaltung_design: { label: "Gestaltung & Design", tags: ["zeichnen_illustrieren","grafik_am_computer_gestalten","foto_video_aufnehmen","raum_innen_gestalten","mode_entwerfen","produkt_entwerfen"] },
+  sprache_kommunikation: { label: "Sprache & Kommunikation", tags: ["text_schreiben_redigieren","uebersetzen_dolmetschen","moderieren_praesentieren","recherche_journalistisch"] },
+  bildung_soziales: { label: "Bildung & Soziales", tags: ["unterricht_halten_erklaeren","kind_betreuen_erziehen","mensch_beraten_begleiten","gruppe_anleiten","konflikt_vermitteln"] },
+  wirtschaft_verwaltung: { label: "Wirtschaft & Verwaltung", tags: ["zahlen_buchhaltung","tabelle_auswerten","kunde_beraten_verkaufen","projekt_planen_organisieren","personal_verwalten","einkauf_handel"] },
+  recht_sicherheit: { label: "Recht & Sicherheit", tags: ["gesetz_recherchieren_anwenden","vertrag_aufsetzen","ordnung_sicherheit_durchsetzen","ermitteln_untersuchen"] },
+  gastronomie_lebensmittel: { label: "Gastronomie & Lebensmittel", tags: ["speise_zubereiten","lebensmittel_herstellen","gast_bedienen","getraenk_mixen_servieren"] },
+  verkehr_logistik: { label: "Verkehr & Logistik", tags: ["fahrzeug_fuehren","route_planen_navigieren","waren_verladen_lagern","flugzeug_schiff_fuehren"] }
+};
+
+/* ======================================================================
+   TAG-FORMULIERUNGEN — bildhafte deutsche Saetze pro Tag
+   ====================================================================== */
+
+const TAG_TEXT = {
+  // Handwerk & Material
+  holz_bearbeiten: "Ein Holzbrett genau zuschneiden und zusammenbauen",
+  metall_bearbeiten: "Ein Metallstück feilen, bohren und in Form bringen",
+  stoff_verarbeiten: "Einen Stoff zuschneiden und etwas daraus nähen",
+  stein_keramik_formen: "Aus Ton eine Schale formen oder einen Stein bearbeiten",
+  glas_bearbeiten: "Glas schneiden, schleifen oder kunstvoll bemalen",
+  schmuck_fertigen: "Einen Ring oder eine Kette aus Silber fertigen",
+  praezisionsarbeit_hand: "Sehr feine Arbeit mit ruhiger Hand — auf Zehntelmillimeter genau",
+  // Technik & Maschinen
+  maschine_bedienen: "Eine Produktionsmaschine einrichten und laufen lassen",
+  maschine_warten_reparieren: "Ein defektes Gerät öffnen und wieder zum Laufen bringen",
+  motor_diagnostizieren: "Herausfinden, warum ein Motor nicht richtig läuft",
+  fahrzeug_reparieren: "Eine Bremse wechseln oder einen Ölwechsel machen",
+  hydraulik_pneumatik: "Mit Druckluft oder Öldruck eine Maschine steuern",
+  schweissen_loeten: "Zwei Metallteile mit Hitze fest verbinden",
+  // Elektronik & IT
+  stromkreis_verdrahten: "Kabel verlegen und einen Stromkreis zum Laufen bringen",
+  elektronik_loeten: "Winzige Bauteile auf eine Platine löten",
+  computer_reparieren: "Einen Computer aufschrauben und ein defektes Teil tauschen",
+  netzwerk_einrichten: "Ein WLAN-Netzwerk oder einen Server einrichten",
+  code_schreiben: "Ein kleines Programm schreiben, das etwas automatisiert",
+  datenbank_auswerten: "Aus großen Tabellen wichtige Zahlen herausfiltern",
+  app_website_gestalten: "Eine App oder Website entwerfen und programmieren",
+  ki_datenanalyse: "Mit Daten Muster erkennen und Vorhersagen treffen",
+  // Medizin & Pflege
+  wunde_versorgen: "Einen Verband anlegen und eine Wunde versorgen",
+  patient_untersuchen: "Blutdruck messen und Beschwerden eines Patienten untersuchen",
+  medikament_verabreichen: "Medikamente nach Plan vorbereiten und geben",
+  senior_pflegen: "Einer älteren Person beim Essen und Anziehen helfen",
+  kind_medizinisch_betreuen: "Ein Kind beim Arztbesuch beruhigen und untersuchen",
+  therapie_anleiten: "Jemandem zeigen, wie er nach einer Verletzung wieder gehen lernt",
+  zahn_behandeln: "Einen Zahn behandeln oder beim Zahnarzt assistieren",
+  // Labor & Naturwissenschaft
+  mikroskop_bedienen: "Eine Wasserprobe unter dem Mikroskop untersuchen",
+  probe_analysieren: "Eine Blut- oder Bodenprobe im Labor auswerten",
+  experiment_durchfuehren: "Ein wissenschaftliches Experiment aufbauen und durchführen",
+  messdaten_dokumentieren: "Messwerte genau aufschreiben und in Tabellen sortieren",
+  chemikalie_mischen: "Chemikalien nach Rezept mischen und reagieren lassen",
+  // Bau & Architektur
+  mauer_errichten: "Steine zu einer Mauer aufeinander schichten",
+  dach_decken: "Ziegel auf ein Dach setzen",
+  rohr_verlegen: "Wasserrohre verlegen und verbinden",
+  fliesen_setzen: "Fliesen in einem Bad passgenau verlegen",
+  gebaeude_planen_zeichnen: "Einen Grundriss für ein Haus zeichnen",
+  vermessen_im_gelaende: "Mit Lasergerät ein Grundstück vermessen",
+  // Natur & Umwelt
+  pflanze_bestimmen_pflegen: "Verschiedene Pflanzen erkennen und pflegen",
+  boden_wasser_untersuchen: "Wasser- und Bodenproben auf Schadstoffe untersuchen",
+  wald_bewirtschaften: "Im Wald Bäume pflanzen und fällen",
+  garten_anlegen: "Einen Garten anlegen, Wege pflastern, Blumen pflanzen",
+  ernte_verarbeiten: "Obst oder Gemüse ernten und zum Verkauf vorbereiten",
+  // Tiere
+  tier_untersuchen_behandeln: "Einem Tier in der Praxis helfen und es untersuchen",
+  tier_versorgen_fuettern: "Tiere im Zoo oder auf dem Hof füttern und pflegen",
+  tier_trainieren: "Einen Hund oder ein Pferd trainieren",
+  zuchttier_beurteilen: "Zuchttiere auswählen und ihre Gesundheit beurteilen",
+  // Gestaltung & Design
+  zeichnen_illustrieren: "Mit der Hand Zeichnungen oder Illustrationen anfertigen",
+  grafik_am_computer_gestalten: "Am Computer Poster oder Logos gestalten",
+  foto_video_aufnehmen: "Fotos oder Videos aufnehmen und bearbeiten",
+  raum_innen_gestalten: "Einen Raum gestalten — Farben, Möbel, Licht auswählen",
+  mode_entwerfen: "Kleidung entwerfen und skizzieren",
+  produkt_entwerfen: "Ein neues Produkt wie einen Stuhl oder ein Gerät entwerfen",
+  // Sprache & Kommunikation
+  text_schreiben_redigieren: "Einen Text verfassen, überarbeiten und korrigieren",
+  uebersetzen_dolmetschen: "Von einer Sprache in eine andere übersetzen",
+  moderieren_praesentieren: "Vor einer Gruppe etwas vortragen oder moderieren",
+  recherche_journalistisch: "Ein Thema recherchieren und einen Artikel dazu schreiben",
+  // Bildung & Soziales
+  unterricht_halten_erklaeren: "Einer Gruppe etwas erklären und Unterricht gestalten",
+  kind_betreuen_erziehen: "Mit Kindern spielen, basteln und sie fördern",
+  mensch_beraten_begleiten: "Menschen mit Problemen zuhören und beraten",
+  gruppe_anleiten: "Eine Gruppe führen, Aufgaben verteilen, motivieren",
+  konflikt_vermitteln: "Zwischen zwei Parteien vermitteln und Streit schlichten",
+  // Wirtschaft & Verwaltung
+  zahlen_buchhaltung: "Rechnungen prüfen und Einnahmen/Ausgaben verbuchen",
+  tabelle_auswerten: "Mit Excel Tabellen auswerten und Grafiken erstellen",
+  kunde_beraten_verkaufen: "Kund:innen beraten und ihnen beim Kauf helfen",
+  projekt_planen_organisieren: "Ein Projekt planen, Aufgaben verteilen und überwachen",
+  personal_verwalten: "Dienstpläne erstellen und Personal einteilen",
+  einkauf_handel: "Waren einkaufen, verhandeln und weiterverkaufen",
+  // Recht & Sicherheit
+  gesetz_recherchieren_anwenden: "In Gesetzestexten nach der richtigen Regel suchen",
+  vertrag_aufsetzen: "Einen Vertrag formulieren und prüfen",
+  ordnung_sicherheit_durchsetzen: "Für Ordnung und Sicherheit sorgen — z.B. als Wachperson",
+  ermitteln_untersuchen: "Einem Hinweis nachgehen und einen Fall aufklären",
+  // Gastronomie & Lebensmittel
+  speise_zubereiten: "Ein mehrgängiges Menü frisch zubereiten",
+  lebensmittel_herstellen: "Brot backen, Wurst herstellen oder Käse machen",
+  gast_bedienen: "In einem Restaurant Gäste freundlich bedienen",
+  getraenk_mixen_servieren: "Cocktails mixen und Getränke servieren",
+  // Verkehr & Logistik
+  fahrzeug_fuehren: "Einen LKW, Bus oder Zug sicher durch den Verkehr führen",
+  route_planen_navigieren: "Routen planen und am schnellsten ans Ziel navigieren",
+  waren_verladen_lagern: "Pakete sortieren, verladen und im Lager organisieren",
+  flugzeug_schiff_fuehren: "Ein Flugzeug oder Schiff steuern"
+};
+
+/* ======================================================================
+   FRAGEN-DEFINITION (reproduzierbar, fest)
+   ====================================================================== */
+
+// Tag-zu-Frage: jeder Tag kommt in GENAU einer Frage vor.
+// Jede Frage mischt 6-8 Kategorien, zwischen 10 und 14 Taetigkeiten.
+const FRAGEN_TAGS = [
+  // Frage C1 — Handwerk & Bauen & Technik grob
+  [
+    "holz_bearbeiten","metall_bearbeiten","schweissen_loeten",
+    "mauer_errichten","dach_decken","fliesen_setzen",
+    "fahrzeug_reparieren","maschine_warten_reparieren",
+    "stromkreis_verdrahten","praezisionsarbeit_hand",
+    "schmuck_fertigen","glas_bearbeiten"
+  ],
+  // Frage C2 — Naturnah & draussen
+  [
+    "pflanze_bestimmen_pflegen","garten_anlegen","wald_bewirtschaften",
+    "ernte_verarbeiten","boden_wasser_untersuchen",
+    "tier_versorgen_fuettern","tier_trainieren","zuchttier_beurteilen",
+    "rohr_verlegen","vermessen_im_gelaende","fahrzeug_fuehren"
+  ],
+  // Frage C3 — Menschen helfen & Gesundheit
+  [
+    "wunde_versorgen","patient_untersuchen","medikament_verabreichen",
+    "senior_pflegen","kind_medizinisch_betreuen","therapie_anleiten",
+    "zahn_behandeln","tier_untersuchen_behandeln",
+    "kind_betreuen_erziehen","mensch_beraten_begleiten",
+    "konflikt_vermitteln"
+  ],
+  // Frage C4 — Denken, Forschen, Daten
+  [
+    "mikroskop_bedienen","probe_analysieren","experiment_durchfuehren",
+    "messdaten_dokumentieren","chemikalie_mischen",
+    "code_schreiben","datenbank_auswerten","ki_datenanalyse",
+    "elektronik_loeten","computer_reparieren","netzwerk_einrichten",
+    "gesetz_recherchieren_anwenden","ermitteln_untersuchen"
+  ],
+  // Frage C5 — Gestalten & Kommunizieren
+  [
+    "zeichnen_illustrieren","grafik_am_computer_gestalten",
+    "foto_video_aufnehmen","raum_innen_gestalten",
+    "mode_entwerfen","produkt_entwerfen","stoff_verarbeiten",
+    "app_website_gestalten","gebaeude_planen_zeichnen",
+    "text_schreiben_redigieren","uebersetzen_dolmetschen",
+    "moderieren_praesentieren","recherche_journalistisch",
+    "stein_keramik_formen","unterricht_halten_erklaeren","gruppe_anleiten"
+  ],
+  // Frage C6 — Organisieren, Wirtschaft, Versorgen, Bewegen
+  [
+    "zahlen_buchhaltung","tabelle_auswerten","kunde_beraten_verkaufen",
+    "projekt_planen_organisieren","personal_verwalten","einkauf_handel",
+    "vertrag_aufsetzen","ordnung_sicherheit_durchsetzen",
+    "speise_zubereiten","lebensmittel_herstellen","gast_bedienen",
+    "getraenk_mixen_servieren","route_planen_navigieren",
+    "waren_verladen_lagern","flugzeug_schiff_fuehren",
+    "maschine_bedienen","motor_diagnostizieren","hydraulik_pneumatik"
+  ]
+];
+
+const FRAGEN_C_TITEL = [
+  "Welche dieser Tätigkeiten würdest du gerne tun?",
+  "Welche dieser Tätigkeiten würdest du gerne tun?",
+  "Welche dieser Tätigkeiten würdest du gerne tun?",
+  "Welche dieser Tätigkeiten würdest du gerne tun?",
+  "Welche dieser Tätigkeiten würdest du gerne tun?",
+  "Welche dieser Tätigkeiten würdest du gerne tun?"
+];
+
+/* ======================================================================
+   MOTIVATIONS-MAPPING
+   ====================================================================== */
+
+const MOTIVATIONEN = [
+  { id: "anderen_helfen", label: "Anderen Menschen helfen" },
+  { id: "sichtbares_schaffen", label: "Etwas Sichtbares schaffen" },
+  { id: "gut_verdienen", label: "Gut verdienen" },
+  { id: "sicherheit", label: "Sicherheit und Stabilität" },
+  { id: "eigenstaendig", label: "Eigenständig arbeiten" },
+  { id: "neues_lernen", label: "Ständig Neues lernen" },
+  { id: "mit_haenden", label: "Mit den Händen arbeiten" },
+  { id: "verantwortung", label: "Verantwortung übernehmen" }
+];
+
+const MOTIVATION_MAPPING = {
+  anderen_helfen: ["medizin_pflege", "bildung_soziales"],
+  sichtbares_schaffen: ["handwerk_material", "bau_architektur", "gestaltung_design"],
+  gut_verdienen: ["technik_maschinen", "elektronik_it", "wirtschaft_verwaltung"],
+  sicherheit: ["wirtschaft_verwaltung", "recht_sicherheit", "medizin_pflege"],
+  eigenstaendig: ["handwerk_material", "gestaltung_design", "natur_umwelt"],
+  neues_lernen: ["elektronik_it", "labor_naturwissenschaft", "medizin_pflege"],
+  mit_haenden: ["handwerk_material", "bau_architektur", "gastronomie_lebensmittel", "tiere"],
+  verantwortung: ["medizin_pflege", "recht_sicherheit", "bildung_soziales"]
+};
+
+/* ======================================================================
+   MOBILITAETS-OPTIONEN
+   ====================================================================== */
+
+const MOBILITAET = [
+  { id: "25km", label: "Maximal 25 km (täglich pendeln)" },
+  { id: "100km", label: "Bis 100 km (mit Zug/ÖPNV erreichbar)" },
+  { id: "bundesweit", label: "Bundesweit (auch umziehen)" }
+];
+
+/* ======================================================================
+   REGLER-DEFINITIONEN (Block B)
+   ====================================================================== */
+
+const REGLER = [
+  { id: "drinnen_draussen", frage: "Lieber drinnen oder draußen?", linksPol: "drinnen", rechtsPol: "draußen" },
+  { id: "allein_team", frage: "Lieber allein oder im Team?", linksPol: "allein", rechtsPol: "im Team" },
+  { id: "routine_wechsel", frage: "Lieber ruhige Routine oder ständiger Wechsel?", linksPol: "ruhige Routine", rechtsPol: "ständiger Wechsel" },
+  { id: "anpacken_konzentriert", frage: "Lieber körperlich anpackend oder lieber still konzentriert?", linksPol: "anpackend", rechtsPol: "still konzentriert" }
+];
+
+/* ======================================================================
+   APP-STATE + NAVIGATION
+   ====================================================================== */
+
+const SPEICHER_KEY = "kleinerpfadfinder_state_v1";
+const GESAMT_SCHRITTE = 1 + 1 + 4 + 6 + 1; // Start + Mobilität + 4 Regler + 6 Tätigkeits + 1 Motivation = aber Start ist kein Frage-Schritt
+// Fragen-Schritte: 12 (1 Mobilität + 4 Regler (auf einem Screen zusammen) + 6 Tätigkeit + 1 Motivation)
+// Wir zeigen Regler als 4 einzelne Schritte -> 12 Schritte total.
+
+const FRAGE_SCHRITTE = [
+  { typ: "mobilitaet", titel: "Wie weit würdest du für deine Ausbildung fahren oder umziehen?" },
+  { typ: "regler", reglerIndex: 0 },
+  { typ: "regler", reglerIndex: 1 },
+  { typ: "regler", reglerIndex: 2 },
+  { typ: "regler", reglerIndex: 3 },
+  { typ: "taetigkeit", frageIndex: 0, titel: FRAGEN_C_TITEL[0] },
+  { typ: "taetigkeit", frageIndex: 1, titel: FRAGEN_C_TITEL[1] },
+  { typ: "taetigkeit", frageIndex: 2, titel: FRAGEN_C_TITEL[2] },
+  { typ: "taetigkeit", frageIndex: 3, titel: FRAGEN_C_TITEL[3] },
+  { typ: "taetigkeit", frageIndex: 4, titel: FRAGEN_C_TITEL[4] },
+  { typ: "taetigkeit", frageIndex: 5, titel: FRAGEN_C_TITEL[5] },
+  { typ: "motivation", titel: "Was wäre dir in deinem Beruf am wichtigsten?" }
+];
+
+const ANZAHL_FRAGEN = FRAGE_SCHRITTE.length;
+
+function leererState() {
+  return {
+    screen: "start", // "start" | "frage" | "ergebnis"
+    frageIndex: 0,
+    antworten: {
+      mobilitaet: null,
+      regler: { drinnen_draussen: 50, allein_team: 50, routine_wechsel: 50, anpacken_konzentriert: 50 },
+      taetigkeiten: new Set(),
+      motivation: new Set()
+    }
+  };
+}
+
+function speichereState(state) {
+  try {
+    const ser = {
+      ...state,
+      antworten: {
+        ...state.antworten,
+        taetigkeiten: Array.from(state.antworten.taetigkeiten),
+        motivation: Array.from(state.antworten.motivation)
+      }
+    };
+    localStorage.setItem(SPEICHER_KEY, JSON.stringify(ser));
+  } catch (e) { /* localStorage ggf. gesperrt — egal */ }
+}
+
+function ladeState() {
+  try {
+    const raw = localStorage.getItem(SPEICHER_KEY);
+    if (!raw) return leererState();
+    const parsed = JSON.parse(raw);
+    parsed.antworten.taetigkeiten = new Set(parsed.antworten.taetigkeiten || []);
+    parsed.antworten.motivation = new Set(parsed.antworten.motivation || []);
+    if (!parsed.antworten.regler) parsed.antworten.regler = leererState().antworten.regler;
+    return parsed;
+  } catch (e) { return leererState(); }
+}
+
+let state = ladeState();
+
+/* ======================================================================
+   RENDER-FUNKTIONEN
+   ====================================================================== */
+
+const app = document.getElementById("app");
+
+function rendere() {
+  if (state.screen === "start") rendereStart();
+  else if (state.screen === "frage") rendereFrage();
+  else if (state.screen === "ergebnis") rendereErgebnis();
+  speichereState(state);
+  window.scrollTo(0, 0);
+}
+
+function rendereStart() {
+  app.className = "container";
+  app.innerHTML = `
+    <section class="startseite">
+      <h1>KleinerPfadfinder</h1>
+      <p class="untertitel">
+        Ein Fragebogen für Schüler:innen, die nach einem Ausbildungsberuf suchen.
+        Am Ende bekommst du <strong>10 Berufe als Spektrum</strong> — keine einzelne
+        „Top-Empfehlung", sondern Ideen, über die du vielleicht noch nie nachgedacht hast.
+      </p>
+      <ul class="leitplanken">
+        <li>Dauert etwa 5 Minuten.</li>
+        <li>Deine Antworten bleiben auf deinem Gerät — es wird nichts gesendet.</li>
+        <li>Du kannst jederzeit zurück oder neu starten.</li>
+      </ul>
+      <div style="margin-top: 2.5rem;">
+        <button class="btn btn-primary" id="btn-start">Los geht's</button>
+        ${hatFortschritt() ? `<div style="margin-top: 1rem;"><button class="btn btn-leise" id="btn-weiter">Fortsetzen bei Frage ${state.frageIndex + 1}</button></div>` : ""}
+      </div>
+    </section>
+  `;
+  document.getElementById("btn-start").addEventListener("click", () => {
+    state = leererState();
+    state.screen = "frage";
+    rendere();
+  });
+  const btnWeiter = document.getElementById("btn-weiter");
+  if (btnWeiter) btnWeiter.addEventListener("click", () => {
+    state.screen = "frage";
+    rendere();
+  });
+}
+
+function hatFortschritt() {
+  const a = state.antworten;
+  return a.mobilitaet !== null || a.taetigkeiten.size > 0 || a.motivation.size > 0;
+}
+
+function rendereFortschritt() {
+  const schritt = state.frageIndex + 1;
+  const prozent = Math.round((schritt / ANZAHL_FRAGEN) * 100);
+  return `
+    <div class="fortschritt">
+      <span>Frage ${schritt} von ${ANZAHL_FRAGEN}</span>
+      <div class="fortschritt-balken"><div class="fortschritt-balken-fuell" style="width: ${prozent}%"></div></div>
+      <span>${prozent}%</span>
+    </div>
+  `;
+}
+
+function rendereFrage() {
+  app.className = "container";
+  const schritt = FRAGE_SCHRITTE[state.frageIndex];
+  if (!schritt) { state.screen = "ergebnis"; rendere(); return; }
+
+  let inhalt = "";
+  if (schritt.typ === "mobilitaet") inhalt = rendereMobilitaetsFrage();
+  else if (schritt.typ === "regler") inhalt = rendereReglerFrage(REGLER[schritt.reglerIndex]);
+  else if (schritt.typ === "taetigkeit") inhalt = rendereTaetigkeitsFrage(schritt.frageIndex, schritt.titel);
+  else if (schritt.typ === "motivation") inhalt = rendereMotivationsFrage();
+
+  const istLetzte = state.frageIndex === ANZAHL_FRAGEN - 1;
+  const zurueck = state.frageIndex > 0
+    ? `<button class="btn btn-leise" id="btn-zurueck">← Zurück</button>`
+    : `<button class="btn btn-leise" id="btn-zurueck">← Zum Start</button>`;
+  const weiterLabel = istLetzte ? "Ergebnis ansehen" : "Weiter";
+
+  app.innerHTML = `
+    ${rendereFortschritt()}
+    <section class="karte">
+      ${inhalt}
+    </section>
+    <div class="nav-unten">
+      ${zurueck}
+      <button class="btn btn-primary" id="btn-weiter" ${istSchrittFertig() ? "" : "disabled"}>${weiterLabel}</button>
+    </div>
+  `;
+
+  document.getElementById("btn-zurueck").addEventListener("click", () => {
+    if (state.frageIndex > 0) state.frageIndex--;
+    else state.screen = "start";
+    rendere();
+  });
+  document.getElementById("btn-weiter").addEventListener("click", () => {
+    if (istLetzte) { state.screen = "ergebnis"; }
+    else state.frageIndex++;
+    rendere();
+  });
+  bindeFrageHandler(schritt);
+}
+
+function istSchrittFertig() {
+  const schritt = FRAGE_SCHRITTE[state.frageIndex];
+  if (schritt.typ === "mobilitaet") return state.antworten.mobilitaet !== null;
+  if (schritt.typ === "regler") return true; // Defaultwert 50 zählt als Antwort
+  if (schritt.typ === "taetigkeit") return true; // 0 Antworten erlaubt
+  if (schritt.typ === "motivation") return true; // 0 Antworten erlaubt
+  return false;
+}
+
+function rendereMobilitaetsFrage() {
+  const gewaehlt = state.antworten.mobilitaet;
+  const options = MOBILITAET.map(m => `
+    <label class="option ${gewaehlt === m.id ? "gewaehlt" : ""}">
+      <input type="radio" name="mobilitaet" value="${m.id}" ${gewaehlt === m.id ? "checked" : ""}>
+      <span class="option-text">${m.label}</span>
+    </label>
+  `).join("");
+  return `
+    <h2 class="frage-titel">Wie weit würdest du für deine Ausbildung fahren oder umziehen?</h2>
+    <div class="optionen">${options}</div>
+  `;
+}
+
+function rendereReglerFrage(regler) {
+  const wert = state.antworten.regler[regler.id];
+  return `
+    <h2 class="frage-titel">${regler.frage}</h2>
+    <div class="regler-block">
+      <div class="regler-label">
+        <span class="pol">${regler.linksPol}</span>
+        <span class="pol">${regler.rechtsPol}</span>
+      </div>
+      <input type="range" min="0" max="100" value="${wert}" id="regler-input" aria-label="${regler.frage}">
+      <div class="regler-ausgabe" id="regler-ausgabe">${reglerAusgabeText(regler, wert)}</div>
+    </div>
+  `;
+}
+
+function reglerAusgabeText(regler, wert) {
+  if (wert < 30) return `Eher ${regler.linksPol}`;
+  if (wert > 70) return `Eher ${regler.rechtsPol}`;
+  return "Mittendrin — egal";
+}
+
+function rendereTaetigkeitsFrage(frageIndex, titel) {
+  const tags = FRAGEN_TAGS[frageIndex];
+  const items = tags.map(tag => {
+    const text = TAG_TEXT[tag] || tag;
+    const ist = state.antworten.taetigkeiten.has(tag);
+    return `
+      <label class="taetigkeit ${ist ? "gewaehlt" : ""}">
+        <input type="checkbox" data-tag="${tag}" ${ist ? "checked" : ""}>
+        <span>${text}</span>
+      </label>
+    `;
+  }).join("");
+  return `
+    <h2 class="frage-titel">${titel}</h2>
+    <p class="hilfe-text">Kreuze alle an, die du wirklich gerne machen würdest. Du kannst auch keine oder viele auswählen.</p>
+    <div class="taetigkeiten">${items}</div>
+  `;
+}
+
+function rendereMotivationsFrage() {
+  const items = MOTIVATIONEN.map(m => {
+    const ist = state.antworten.motivation.has(m.id);
+    return `
+      <label class="option ${ist ? "gewaehlt" : ""}">
+        <input type="checkbox" data-motivation="${m.id}" ${ist ? "checked" : ""}>
+        <span class="option-text">${m.label}</span>
+      </label>
+    `;
+  }).join("");
+  return `
+    <h2 class="frage-titel">Was wäre dir in deinem Beruf am wichtigsten?</h2>
+    <p class="motivations-hinweis">Wähle bis zu 3 Antworten aus.</p>
+    <div class="optionen">${items}</div>
+  `;
+}
+
+function bindeFrageHandler(schritt) {
+  if (schritt.typ === "mobilitaet") {
+    app.querySelectorAll('input[name="mobilitaet"]').forEach(inp => {
+      inp.addEventListener("change", e => {
+        state.antworten.mobilitaet = e.target.value;
+        rendere();
+      });
+    });
+  } else if (schritt.typ === "regler") {
+    const input = document.getElementById("regler-input");
+    const out = document.getElementById("regler-ausgabe");
+    const regler = REGLER[schritt.reglerIndex];
+    input.addEventListener("input", () => {
+      const wert = parseInt(input.value, 10);
+      state.antworten.regler[regler.id] = wert;
+      out.textContent = reglerAusgabeText(regler, wert);
+      speichereState(state);
+    });
+  } else if (schritt.typ === "taetigkeit") {
+    app.querySelectorAll('.taetigkeit input[type="checkbox"]').forEach(inp => {
+      inp.addEventListener("change", e => {
+        const tag = e.target.dataset.tag;
+        if (e.target.checked) state.antworten.taetigkeiten.add(tag);
+        else state.antworten.taetigkeiten.delete(tag);
+        e.target.closest(".taetigkeit").classList.toggle("gewaehlt", e.target.checked);
+        speichereState(state);
+      });
+    });
+  } else if (schritt.typ === "motivation") {
+    const inputs = app.querySelectorAll('input[data-motivation]');
+    inputs.forEach(inp => {
+      inp.addEventListener("change", e => {
+        const id = e.target.dataset.motivation;
+        if (e.target.checked) {
+          if (state.antworten.motivation.size >= 3) {
+            e.target.checked = false;
+            return;
+          }
+          state.antworten.motivation.add(id);
+        } else {
+          state.antworten.motivation.delete(id);
+        }
+        e.target.closest(".option").classList.toggle("gewaehlt", e.target.checked);
+        speichereState(state);
+      });
+    });
+  }
+}
+
+/* ======================================================================
+   MATCHING-ALGORITHMUS
+   ====================================================================== */
+
+function matche() {
+  const a = state.antworten;
+  const userTags = a.taetigkeiten;
+  const userRegler = a.regler;
+  const userMotivation = a.motivation;
+
+  // Berufe ohne needs_review filtern
+  const kandidaten = BERUFE.filter(b => !b.needs_review);
+
+  const bewertet = kandidaten.map(b => {
+    // 1) Tag-Score
+    const berufTags = b.tags || [];
+    let matchTags = [];
+    for (const t of berufTags) if (userTags.has(t)) matchTags.push(t);
+    const tagScore = berufTags.length > 0 ? matchTags.length / berufTags.length : 0;
+
+    // 2) Umgebungs-Score
+    let umgDiff = 0;
+    for (const r of REGLER) {
+      const userVal = userRegler[r.id];
+      const berufVal = (b.umgebung && b.umgebung[r.id] != null) ? b.umgebung[r.id] : 50;
+      umgDiff += Math.abs(userVal - berufVal);
+    }
+    const umgebungScore = 1 - (umgDiff / (REGLER.length * 100));
+
+    // 3) Motivations-Score
+    const berufKat = new Set(b.kategorien || []);
+    let motOverlap = 0;
+    let motTotalKat = berufKat.size;
+    if (userMotivation.size > 0 && motTotalKat > 0) {
+      for (const kat of berufKat) {
+        for (const m of userMotivation) {
+          if ((MOTIVATION_MAPPING[m] || []).includes(kat)) { motOverlap++; break; }
+        }
+      }
+    }
+    const motivationScore = motTotalKat > 0 ? motOverlap / motTotalKat : 0;
+
+    // 4) Gesamtscore
+    const gesamt = 0.6 * tagScore + 0.25 * umgebungScore + 0.15 * motivationScore;
+
+    return { beruf: b, score: gesamt, matchTags, tagScore, umgebungScore };
+  });
+
+  bewertet.sort((x, y) => y.score - x.score);
+
+  // Diversifizieren: max. 3 pro Oberkategorie
+  const top = [];
+  const katZaehler = {};
+  const MAX_PRO_KAT = 3;
+
+  for (const b of bewertet) {
+    if (top.length >= 10) break;
+    const kategorien = b.beruf.kategorien || [];
+    const hauptKat = kategorien[0] || "_unbekannt";
+    if ((katZaehler[hauptKat] || 0) >= MAX_PRO_KAT) continue;
+    top.push(b);
+    katZaehler[hauptKat] = (katZaehler[hauptKat] || 0) + 1;
+  }
+
+  // Auffuellen falls zu wenige
+  if (top.length < 10) {
+    for (const b of bewertet) {
+      if (top.length >= 10) break;
+      if (!top.includes(b)) top.push(b);
+    }
+  }
+
+  return top;
+}
+
+function begruendung(match) {
+  const { beruf, matchTags, tagScore, umgebungScore } = match;
+  const regler = state.antworten.regler;
+
+  const parts = [];
+  if (matchTags.length > 0) {
+    const texte = matchTags.slice(0, 3).map(t => TAG_TEXT[t] ? TAG_TEXT[t].toLowerCase() : t);
+    parts.push(`Dieser Beruf passt, weil du bei „${texte.join("“, „")}“ angekreuzt hast.`);
+  } else {
+    parts.push("Dieser Beruf passt zu deinem Profil bei den Umgebungs- und Motivationsfragen.");
+  }
+
+  // Umgebungs-Zusatz
+  const u = beruf.umgebung || {};
+  const umgTeile = [];
+  if (Math.abs(regler.drinnen_draussen - (u.drinnen_draussen || 50)) < 25) {
+    umgTeile.push(regler.drinnen_draussen < 50 ? "drinnen" : (regler.drinnen_draussen > 50 ? "draußen" : null));
+  }
+  if (Math.abs(regler.anpacken_konzentriert - (u.anpacken_konzentriert || 50)) < 25) {
+    umgTeile.push(regler.anpacken_konzentriert < 50 ? "körperlich anpackend" : (regler.anpacken_konzentriert > 50 ? "still konzentriert" : null));
+  }
+  const gefilt = umgTeile.filter(Boolean);
+  if (gefilt.length) parts.push(`Typische Umgebung: ${gefilt.join(", ")}.`);
+
+  return parts.join(" ");
+}
+
+/* ======================================================================
+   ERGEBNIS-ANZEIGE
+   ====================================================================== */
+
+function rendereErgebnis() {
+  app.className = "container-breit";
+
+  if (!BERUFE || BERUFE.length === 0) {
+    app.innerHTML = `
+      <section class="karte fehler">
+        <h2>Noch keine Berufsdaten verfügbar</h2>
+        <p>Die Berufsliste ist noch nicht eingebettet. Bitte lass die Datei <code>build/berufe.json</code> generieren und in diese HTML-Datei einbetten (Phase 6).</p>
+        <button class="btn btn-sekundaer" onclick="window.location.reload()">Neu starten</button>
+      </section>
+    `;
+    return;
+  }
+
+  const top = matche();
+  const mobTexte = {
+    "25km": "Du willst innerhalb von 25 km bleiben — Ausbildungsbetriebe in deiner Nähe suchen.",
+    "100km": "Du bist bereit, bis 100 km mit Zug/ÖPNV zu pendeln — größere Auswahl an Betrieben.",
+    "bundesweit": "Du bist bundesweit flexibel — auch seltene Berufe in anderen Regionen sind möglich."
+  };
+  const mobText = mobTexte[state.antworten.mobilitaet] || "";
+
+  const karten = top.map((m, i) => {
+    const b = m.beruf;
+    const roh = (BERUFE_ROH || []).find(r => r.id === b.id);
+    const beschreibung = roh ? roh.beschreibung : "";
+    const dauer = b.dauer_jahre ? `${b.dauer_jahre} Jahre` : "";
+    return `
+      <article class="ergebnis-karte">
+        <div class="rang">Vorschlag ${i + 1}</div>
+        <h3>${escapeHtml(b.name)}</h3>
+        ${beschreibung ? `<p class="beschreibung">${escapeHtml(beschreibung)}</p>` : ""}
+        <div class="begruendung">${escapeHtml(begruendung(m))}</div>
+        ${dauer ? `<div class="meta">Ausbildungsdauer: ${dauer}</div>` : ""}
+        <a class="link-mehr" href="https://web.arbeitsagentur.de/berufenet/suche?suchwoerter=${encodeURIComponent(b.name)}" target="_blank" rel="noopener">
+          Mehr erfahren auf BERUFENET →
+        </a>
+      </article>
+    `;
+  }).join("");
+
+  app.innerHTML = `
+    <section class="ergebnis-kopf">
+      <h1>Deine 10 Vorschläge</h1>
+      <p>Das ist ein Spektrum — nicht DIE eine richtige Wahl. Schau, was dich anspricht und recherchiere weiter.</p>
+    </section>
+    ${mobText ? `<div class="mobilitaets-hinweis">${escapeHtml(mobText)}</div>` : ""}
+    <section class="ergebnis-gitter">${karten}</section>
+    <div class="ergebnis-aktionen">
+      <button class="btn btn-primary" id="btn-drucken">Ergebnis drucken</button>
+      <button class="btn btn-sekundaer" id="btn-neu">Fragebogen neu starten</button>
+    </div>
+  `;
+
+  document.getElementById("btn-drucken").addEventListener("click", () => window.print());
+  document.getElementById("btn-neu").addEventListener("click", () => {
+    state = leererState();
+    rendere();
+  });
+}
+
+/* ======================================================================
+   UTILITIES
+   ====================================================================== */
+
+function escapeHtml(s) {
+  if (s == null) return "";
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+/* ======================================================================
+   START
+   ====================================================================== */
+
+rendere();
+</script>
+</body>
+</html>
