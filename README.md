@@ -24,24 +24,31 @@ Per USB-Stick verteilbar. Läuft im Flugmodus.
 ## Repository-Struktur
 
 ```
-index.html              # Das Produkt
+index.html              # Das Produkt (Daten inline eingebettet)
 build/
-  tag.js                # Einmaliges Tagging-Skript (Node + Anthropic API)
-  berufe_roh.json       # Rohe Berufsliste
-  berufe.json           # Getaggte Berufsliste (Output von tag.js)
+  berufe_roh.json       # Rohe Berufsliste (Quelldaten)
+  tag.js                # Tagging via Anthropic API (Tags, Kategorien, Umgebung)
+  seltenheit.js         # Klassifiziert regionale Verfügbarkeit (haeufig/regional/selten)
+  fix_review.js         # Manuelle Korrekturen für needs_review-Einträge
+  embed.js              # Embedet berufe.json + berufe_roh.json in index.html
+  berufe.json           # Getaggte Berufsliste (gitignored, Build-Artefakt)
 docs/
   didaktik.md           # Warum der Fragebogen so aufgebaut ist
 ```
 
 ## Tagging neu laufen lassen
 
-Nur nötig, wenn sich die Berufsliste ändert:
+Nur nötig, wenn sich `berufe_roh.json` ändert:
 
 ```bash
-cp .env.example .env
+cp .env.example .env       # einmalig
 # ANTHROPIC_API_KEY in .env eintragen
-npm install @anthropic-ai/sdk
-node build/tag.js
+npm install                # einmalig
+
+node build/tag.js          # Tags, Kategorien, Umgebung (~4 Min, ~3-5 €)
+node build/fix_review.js   # nur falls bekannte needs_review-IDs enthalten sind
+node build/seltenheit.js   # Seltenheits-Klassifikation (~2 Min, <1 €)
+node build/embed.js        # baut alles in index.html ein
 ```
 
-Kosten: ~3–5 € pro kompletter Lauf.
+Danach `index.html` per USB-Stick verteilen — keine Internet-Verbindung mehr nötig.

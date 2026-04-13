@@ -22,7 +22,8 @@ const Anthropic = require('@anthropic-ai/sdk');
 // ---------- Konfiguration ----------
 
 const MODEL = 'claude-sonnet-4-5-20250929';
-const BATCH_SIZE = 10;
+const BATCH_SIZE = 8;
+const BATCH_PAUSE_MS = 12000;
 const MAX_TOKENS = 1024;
 const INPUT_FILE = path.join(__dirname, 'berufe_roh.json');
 const OUTPUT_FILE = path.join(__dirname, 'berufe.json');
@@ -302,6 +303,9 @@ async function main() {
     const ok = results.filter(r => r.ok).length;
     console.log(`  ${ok}/${results.length} erfolgreich`);
     speichereZwischenstand(bereitsGetaggt);
+    if (i + BATCH_SIZE < todo.length) {
+      await new Promise(r => setTimeout(r, BATCH_PAUSE_MS));
+    }
   }
 
   const dauerSek = Math.round((Date.now() - start) / 1000);
