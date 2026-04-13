@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KleinerPfadfinder — Vorschlag an die Schulleitung</title>
+<style>
+  :root {
+    --papier: #f7f3ea;
+    --text: #2a2620;
+    --weich: #5a5046;
+    --rot: #b03a2e;
+    --blau: #2d4a6b;
+    --gruen: #4a6b3a;
+    --linie: #c9bea4;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    background: var(--papier);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 17px;
+  }
+  main { max-width: 780px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+  h1 {
+    font-size: 2.2rem;
+    color: var(--rot);
+    margin: 0 0 0.2em;
+    letter-spacing: 0.01em;
+  }
+  .untertitel {
+    font-size: 1.15rem;
+    color: var(--weich);
+    font-style: italic;
+    margin: 0 0 2.5rem;
+  }
+  h2 {
+    font-size: 1.35rem;
+    color: var(--blau);
+    margin: 2.2rem 0 0.6rem;
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid var(--linie);
+  }
+  p { margin: 0.6em 0; }
+  ul, ol { padding-left: 1.4em; }
+  li { margin: 0.35em 0; }
+  strong { color: var(--text); }
+  .kasten {
+    background: rgba(74, 107, 58, 0.08);
+    border-left: 3px solid var(--gruen);
+    padding: 0.9rem 1.1rem;
+    margin: 1.2rem 0;
+    border-radius: 0 4px 4px 0;
+  }
+  .kasten-blau {
+    background: #E7F3FF;
+    border-left: 3px solid var(--blau);
+    padding: 0.9rem 1.1rem;
+    margin: 1.2rem 0;
+    border-radius: 0 4px 4px 0;
+  }
+  .kasten-rot {
+    background: rgba(176, 58, 46, 0.06);
+    border-left: 3px solid var(--rot);
+    padding: 0.9rem 1.1rem;
+    margin: 1.2rem 0;
+    border-radius: 0 4px 4px 0;
+  }
+  .kasten h3, .kasten-blau h3, .kasten-rot h3 {
+    margin: 0 0 0.4em;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .kasten h3 { color: var(--gruen); }
+  .kasten-blau h3 { color: var(--blau); }
+  .kasten-rot h3 { color: var(--rot); }
+  .fakten {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.5em 1.2em;
+    margin: 1rem 0;
+  }
+  .fakten dt { font-weight: 600; color: var(--weich); }
+  .fakten dd { margin: 0; }
+  footer {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--linie);
+    color: var(--weich);
+    font-size: 0.9rem;
+  }
+  @media print {
+    body { background: white; }
+    main { padding: 1.5rem; }
+    h2 { page-break-after: avoid; }
+    .kasten, .kasten-blau, .kasten-rot { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<main>
+
+<h1>KleinerPfadfinder</h1>
+<p class="untertitel">Ein kleines Berufsorientierungs-Werkzeug — und die Bitte um ein formales Dach der Schule.</p>
+
+<h2>Worum es geht</h2>
+
+<p><strong>KleinerPfadfinder</strong> ist eine kleine Web-Anwendung, die Schüler:innen in etwa fünf Minuten durch einen Fragebogen führt und am Ende <strong>zehn Ausbildungsberufe als Spektrum</strong> vorschlägt — keine einzelne „Top-Empfehlung", sondern Anregungen, über die sie vielleicht noch nie nachgedacht haben.</p>
+
+<p>Der Fragebogen kombiniert drei Ebenen:</p>
+<ul>
+  <li><strong>Arbeitsumgebung:</strong> Lieber drinnen oder draußen? Allein oder im Team? Routine oder Wechsel? Anpackend oder konzentriert?</li>
+  <li><strong>Tätigkeiten:</strong> Rund 70 konkrete Handlungen — „Ein defektes Gerät reparieren", „Einem älteren Menschen beim Anziehen helfen", „Am Computer ein Logo gestalten" — die Schüler:innen intuitiv bewerten können.</li>
+  <li><strong>Motivationen:</strong> Was soll der Beruf bieten? Anderen helfen, Sichtbares schaffen, Sicherheit, eigenständig arbeiten …</li>
+</ul>
+
+<p>Das Matching greift auf rund <strong>290 Ausbildungsberufe</strong> zurück, die mit fachlichen Tags verknüpft sind. Ein ausführlicher Simulationslauf mit 310 virtuellen Schüler:innen-Profilen hat gezeigt: Das System unterscheidet klar zwischen Archetypen (Handwerk, Soziales, Technik, Kreativ, Natur …) und bildet auch uneindeutige oder zurückhaltende Profile ehrlich ab — zurückhaltende Kinder bekommen keine unrealistisch starke „Passung" angezeigt, sondern einen niedrigeren Score mit ehrlichem Hinweis auf Unsicherheit.</p>
+
+<h2>Wie es im Unterricht genutzt wird</h2>
+
+<p>Der Einsatz ist bewusst niedrigschwellig gedacht:</p>
+<ol>
+  <li>Die Lehrkraft zeigt die URL (oder einen QR-Code) in der Klasse.</li>
+  <li>Die Schüler:innen öffnen die Seite auf ihrem eigenen Handy, Tablet oder Schul-Rechner.</li>
+  <li>Sie beantworten den Fragebogen (etwa fünf Minuten) und erhalten ihre persönlichen zehn Vorschläge.</li>
+  <li>Die Vorschläge dienen als Ausgangspunkt für Recherche: Jeder Beruf verlinkt direkt auf die offizielle BERUFENET-Seite der Bundesagentur für Arbeit.</li>
+</ol>
+
+<div class="kasten">
+  <h3>Pädagogischer Mehrwert</h3>
+  <p>Der Kern der Idee: Jugendliche bekommen <em>Horizonterweiterung statt Vereinfachung</em>. Statt auf einen Wunschberuf hingeleitet zu werden, sehen sie ein Spektrum — auch Berufe, die sie nicht kennen oder nicht sofort mit sich verbinden. Ausgangspunkt für Gespräche mit Berufsberatung, Eltern und im Unterricht.</p>
+</div>
+
+<h2>Technik und Datenschutz</h2>
+
+<p>Die Anwendung ist technisch maximal zurückhaltend gebaut:</p>
+
+<dl class="fakten">
+  <dt>Datenverarbeitung</dt>
+  <dd>Komplett im Browser der Nutzer:innen. Keine Server, keine Datenbank, keine Übermittlung irgendwohin.</dd>
+
+  <dt>Speicherung</dt>
+  <dd>Ausschließlich <code>localStorage</code> auf dem Endgerät (damit Fragebögen fortgesetzt werden können). Löschbar über Browser-Einstellungen oder den „Neu starten"-Button.</dd>
+
+  <dt>Tracking</dt>
+  <dd>Keine Analytics-Werkzeuge, kein Google, keine externen Fonts, keine Cookies.</dd>
+
+  <dt>Externe Verbindungen</dt>
+  <dd>Nur ein einziger Link pro Ergebnis-Karte: <em>„Mehr erfahren auf BERUFENET"</em> → Bundesagentur für Arbeit. Wird erst bei aktivem Klick durch die Nutzer:in geöffnet.</dd>
+
+  <dt>Barrierefreiheit</dt>
+  <dd>Getestet auf Chromium, Firefox und Safari. Mobile Darstellung für iPhone und Android geprüft. Tastaturnavigation funktioniert. Automatisierter Accessibility-Scan (axe-core) meldet keine Verstöße.</dd>
+</dl>
+
+<h2>Warum ein Impressum gebraucht wird</h2>
+
+<p>Sobald eine Website in Deutschland öffentlich erreichbar ist und regelmäßig genutzt wird, greift § 5 des Digitale-Dienste-Gesetzes (früher § 5 TMG): <strong>Es muss ein Impressum mit einer ladungsfähigen verantwortlichen Person oder Institution hinterlegt sein</strong>. Das gilt auch dann, wenn keine Gewinnabsicht besteht und die Seite rein zu Bildungszwecken betrieben wird.</p>
+
+<p>Die rein private Ausnahme trägt nur, solange eine Anwendung ausschließlich im engsten persönlichen Umfeld geteilt wird. Ein Einsatz in mehreren Klassen, per QR-Code oder mit weitergereichtem Link, überschreitet diese Schwelle.</p>
+
+<p>Parallel dazu verlangt die DSGVO eine knappe, verständliche Datenschutzerklärung — selbst wenn (wie hier) kaum Daten verarbeitet werden, muss Nutzer:innen transparent gemacht werden, was mit ihren Eingaben geschieht.</p>
+
+<h2>Warum die Schule als Trägerin naheliegt</h2>
+
+<div class="kasten-blau">
+  <h3>Die Überlegung kurz</h3>
+  <p>Das Werkzeug wird im Unterricht eingesetzt, dient pädagogischen Zielen der Schule (Berufsorientierung) und richtet sich an Schüler:innen der Schule. Ein formales Dach durch die Schule ist folgerichtig — und für alle Beteiligten die sauberste Variante.</p>
+</div>
+
+<p>Konkrete Gründe:</p>
+
+<ul>
+  <li><strong>Vertrauensvorsprung.</strong> Eltern und Schüler:innen sehen die Schule als bekannten, verantwortlichen Absender — nicht eine anonyme Privatperson.</li>
+  <li><strong>Rechtlicher Rahmen.</strong> Die Schule verfügt ohnehin über ein Impressum und eine Datenschutzerklärung. Ein Verweis darauf ist rechtssicher und mit wenig Aufwand einzurichten.</li>
+  <li><strong>Einordnung als Unterrichtsmaterial.</strong> Wie Arbeitsblätter oder interne Wikis: Die Schule ist Betreiberin, die einzelne Lehrkraft ist Autorin. Das ist der übliche Weg für schulische Eigenentwicklungen.</li>
+  <li><strong>Niedrige Hürde.</strong> Technisch muss nichts bei der Schule gehostet werden — nur im Impressum-Footer der Anwendung wird auf das Schul-Impressum verwiesen.</li>
+</ul>
+
+<h2>Was konkret benötigt wird</h2>
+
+<ol>
+  <li><strong>Einverständnis der Schulleitung</strong>, dass die Anwendung als schulisches Projekt geführt werden darf.</li>
+  <li><strong>Verweis auf das bestehende Impressum der Schulhomepage</strong> im Footer der Anwendung (nicht neu formuliert, nur verlinkt).</li>
+  <li><strong>Ergänzender Hinweis in der Datenschutzerklärung der Schule</strong>, dass das Tool lokale Browser-Speicherung nutzt und keine personenbezogenen Daten erhebt. Ein Baustein-Text kann gerne vorbereitet werden.</li>
+</ol>
+
+<div class="kasten-rot">
+  <h3>Was die Schule NICHT übernimmt</h3>
+  <p>Hosting, Wartung, inhaltliche Verantwortung für die Berufsauswahl, Weiterentwicklung — all das verbleibt bei der entwickelnden Lehrkraft. Die Schule ist formale Trägerin, nicht Betreiberin im technischen Sinn.</p>
+</div>
+
+<h2>Zusammengefasst</h2>
+
+<p>Ein kleines, datenschutzfreundliches Werkzeug zur Berufsorientierung, technisch entkoppelt von jeder Datenerhebung, entstanden im Rahmen der Unterrichtsarbeit. Der Wunsch: <strong>formale Einordnung als Schulprojekt</strong>, damit Schüler:innen es mit gutem Gewissen im Unterricht und zu Hause nutzen können — und damit die rechtliche Seite sauber geregelt ist.</p>
+
+<p>Für Rückfragen, eine Live-Vorführung oder einen Vorschlag für den konkreten Datenschutz-Absatz stehe ich gerne zur Verfügung.</p>
+
+<footer>
+  <p>Dieses Dokument ist eine interne Vorlage zur Abstimmung mit der Schulleitung.</p>
+</footer>
+
+</main>
+</body>
+</html>
