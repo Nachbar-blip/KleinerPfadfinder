@@ -131,6 +131,21 @@
     top: -0.1em;
   }
 
+  .hinweis-block {
+    margin-top: 3rem;
+    padding: 0.75rem 1rem;
+    border-top: 1px solid var(--linie);
+    font-size: 0.88rem;
+    color: var(--text-weich);
+  }
+  .hinweis-block summary {
+    cursor: pointer;
+    font-weight: 600;
+    padding: 0.4em 0;
+  }
+  .hinweis-block summary:hover { color: var(--tinten-blau); }
+  .hinweis-block p { margin: 0.5em 0; line-height: 1.5; }
+
   /* Fragebogen */
   .fortschritt {
     display: flex;
@@ -786,6 +801,13 @@ function rendereStart() {
         <button class="btn btn-primary" id="btn-start">Los geht's</button>
         ${hatFortschritt() ? `<div style="margin-top: 1rem;"><button class="btn btn-leise" id="btn-weiter">Fortsetzen bei Frage ${state.frageIndex + 1}</button></div>` : ""}
       </div>
+      <details class="hinweis-block">
+        <summary>Hinweis zu Nutzung und Datenschutz</summary>
+        <p><strong>Privater Charakter.</strong> Diese Seite ist ein privates Werkzeug zur Berufsorientierung, ausgelegt für die Weitergabe im persönlichen und schulischen Umfeld. Es ist kein öffentliches Angebot, es gibt keine Gewinnabsicht und keinen Support.</p>
+        <p><strong>Was gespeichert wird.</strong> Deine Antworten werden ausschließlich in deinem Browser (localStorage) auf deinem Gerät abgelegt, damit du den Fragebogen fortsetzen kannst. Es wird <em>nichts</em> an einen Server gesendet. Du kannst die Daten jederzeit löschen (Browser-Einstellungen → Website-Daten) oder über „Fragebogen neu starten".</p>
+        <p><strong>Externe Links.</strong> Beim Klick auf „Mehr erfahren auf BERUFENET" öffnet sich eine Seite der Bundesagentur für Arbeit. Dort gelten deren eigene Datenschutzregeln.</p>
+        <p><strong>Weitergabe.</strong> Wer den Link weitergibt, trägt dafür selbst Verantwortung. Eine öffentliche Verbreitung (Social Media, Suchmaschinen, Aushänge) ist ausdrücklich nicht vorgesehen.</p>
+      </details>
     </section>
   `;
   document.getElementById("btn-start").addEventListener("click", () => {
