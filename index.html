@@ -293,6 +293,43 @@
     text-transform: uppercase;
     margin-bottom: 0.3rem;
   }
+  .ergebnis-karte.top {
+    border: 2px solid var(--moos-gruen);
+    box-shadow: 0 4px 14px rgba(74, 107, 58, 0.18);
+  }
+  .ergebnis-karte.top .rang {
+    color: var(--moos-gruen);
+  }
+  .match-zeile {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0.2rem 0 0.7rem;
+    font-size: 0.82rem;
+    color: var(--text-weich);
+  }
+  .match-balken {
+    flex: 1;
+    height: 6px;
+    background: var(--linie);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .match-fuellung {
+    height: 100%;
+    background: var(--moos-gruen);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+  }
+  .match-fuellung.mittel { background: #C9A227; }
+  .match-fuellung.schwach { background: #B5651D; }
+  .match-prozent {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    color: var(--text);
+    min-width: 2.5em;
+    text-align: right;
+  }
   .ergebnis-karte h3 {
     color: var(--tinten-blau);
     margin-bottom: 0.5rem;
@@ -1056,6 +1093,7 @@ function rendereErgebnis() {
 
   const top = matche();
 
+  const maxScore = top.length > 0 ? top[0].score : 1;
   const karten = top.map((m, i) => {
     const b = m.beruf;
     const roh = (BERUFE_ROH || []).find(r => r.id === b.id);
@@ -1064,10 +1102,18 @@ function rendereErgebnis() {
     const seltenBadge = b.seltenheit === "selten"
       ? `<span class="badge-selten" title="Nur an wenigen Standorten in Deutschland ausbildbar">selten</span>`
       : "";
+    const prozent = Math.round((m.score / maxScore) * 100);
+    const stufeKlasse = m.score >= 0.40 ? "" : (m.score >= 0.25 ? "mittel" : "schwach");
+    const stufeText = m.score >= 0.40 ? "starke Passung" : (m.score >= 0.25 ? "mittlere Passung" : "schwache Passung");
+    const topKlasse = i < 3 ? "top" : "";
     return `
-      <article class="ergebnis-karte">
+      <article class="ergebnis-karte ${topKlasse}">
         <div class="rang">Vorschlag ${i + 1}</div>
         <h3>${escapeHtml(b.name)}${seltenBadge}</h3>
+        <div class="match-zeile" title="${stufeText}">
+          <div class="match-balken"><div class="match-fuellung ${stufeKlasse}" style="width: ${prozent}%"></div></div>
+          <div class="match-prozent">${prozent}%</div>
+        </div>
         ${beschreibung ? `<p class="beschreibung">${escapeHtml(beschreibung)}</p>` : ""}
         <div class="begruendung">${escapeHtml(begruendung(m))}</div>
         ${dauer ? `<div class="meta">Ausbildungsdauer: ${dauer}</div>` : ""}
