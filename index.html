@@ -154,7 +154,7 @@
     transition: width 0.3s;
   }
 
-  .frage-titel { margin-bottom: 1.5rem; }
+  .frage-titel { margin-bottom: 1.5rem; font-size: 1.5rem; }
 
   /* Radio-Optionen */
   .optionen { display: flex; flex-direction: column; gap: 0.5rem; }
@@ -330,7 +330,8 @@
     min-width: 2.5em;
     text-align: right;
   }
-  .ergebnis-karte h3 {
+  .ergebnis-karte h2 {
+    font-size: 1.15rem;
     color: var(--tinten-blau);
     margin-bottom: 0.5rem;
   }
@@ -407,7 +408,7 @@
     .karte, .ergebnis-karte { box-shadow: none; page-break-inside: avoid; }
     .ergebnis-gitter { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
     h1 { font-size: 1.6rem; }
-    .ergebnis-karte h3 { font-size: 1.1rem; }
+    .ergebnis-karte h2 { font-size: 1.1rem; }
   }
 
   /* Fokus-Stile fuer Tastatur-Navigation */
@@ -867,7 +868,7 @@ function istSchrittFertig() {
 function rendereReglerFrage(regler) {
   const wert = state.antworten.regler[regler.id];
   return `
-    <h2 class="frage-titel">${regler.frage}</h2>
+    <h1 class="frage-titel">${regler.frage}</h1>
     <div class="regler-block">
       <div class="regler-label">
         <span class="pol">${regler.linksPol}</span>
@@ -900,7 +901,7 @@ function rendereTaetigkeitsFrage(frageIndex, titel) {
     `;
   }).join("");
   return `
-    <h2 class="frage-titel">${titel}</h2>
+    <h1 class="frage-titel">${titel}</h1>
     <p class="hilfe-text">Kreuze alle an, die du wirklich gerne machen würdest. Du kannst auch keine oder viele auswählen.</p>
     <div class="taetigkeiten">${items}</div>
   `;
@@ -917,7 +918,7 @@ function rendereMotivationsFrage() {
     `;
   }).join("");
   return `
-    <h2 class="frage-titel">Was wäre dir in deinem Beruf am wichtigsten?</h2>
+    <h1 class="frage-titel">Was wäre dir in deinem Beruf am wichtigsten?</h1>
     <p class="motivations-hinweis">Wähle bis zu 3 Antworten aus.</p>
     <div class="optionen">${items}</div>
   `;
@@ -1145,7 +1146,7 @@ function rendereErgebnis() {
     return `
       <article class="ergebnis-karte ${topKlasse}">
         <div class="rang">Vorschlag ${i + 1}</div>
-        <h3>${escapeHtml(b.name)}${seltenBadge}</h3>
+        <h2>${escapeHtml(b.name)}${seltenBadge}</h2>
         <div class="match-zeile" title="${stufe.text}">
           <div class="match-balken"><div class="match-fuellung ${stufe.klasse}" style="width: ${prozent}%"></div></div>
           <div class="match-prozent">${prozent}%</div>
