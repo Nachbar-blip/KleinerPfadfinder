@@ -29,6 +29,8 @@ const INPUT_FILE = path.join(__dirname, 'berufe_roh.json');
 const OUTPUT_FILE = path.join(__dirname, 'berufe.json');
 
 // ---------- Tag-Vokabular (VERBINDLICH, spiegelt KLEINER_PFADFINDER_PROMPT.md §5) ----------
+// SYNC: Bei Aenderung MUSS auch das TAG_VOKABULAR in index.html (~Z. 453)
+// aktualisiert werden — sonst rendert die UI Tags, die kein Beruf hat.
 
 const TAG_VOKABULAR = {
   version: '1.0.0',

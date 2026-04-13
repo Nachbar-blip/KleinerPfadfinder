@@ -615,7 +615,7 @@ const FRAGEN_TAGS = [
     "foto_video_aufnehmen","raum_innen_gestalten",
     "mode_entwerfen","produkt_entwerfen","stoff_verarbeiten",
     "app_website_gestalten","gebaeude_planen_zeichnen",
-    "text_schreiben_redigieren","uebersetzen_dolmetschen",
+    "text_schreiben_redigieren",
     "moderieren_praesentieren","recherche_journalistisch",
     "stein_keramik_formen","unterricht_halten_erklaeren","gruppe_anleiten"
   ],
@@ -682,9 +682,19 @@ const REGLER = [
    ====================================================================== */
 
 const SPEICHER_KEY = "kleinerpfadfinder_state_v1";
-const GESAMT_SCHRITTE = 1 + 1 + 4 + 6 + 1; // Start + Mobilität + 4 Regler + 6 Tätigkeits + 1 Motivation = aber Start ist kein Frage-Schritt
-// Fragen-Schritte: 12 (1 Mobilität + 4 Regler (auf einem Screen zusammen) + 6 Tätigkeit + 1 Motivation)
-// Wir zeigen Regler als 4 einzelne Schritte -> 12 Schritte total.
+
+// Score-Gewichtungen und Schwellen (zentral, damit Drift verhindert wird).
+const W_TAGS = 0.6;
+const W_UMGEBUNG = 0.25;
+const W_MOTIVATION = 0.15;
+const SCHWELLE_RELEVANT = 0.25;       // Score, ab dem ein Beruf ohne 2+ Tag-Match noch durchkommt
+const SCHWELLE_STARK = 0.40;          // Score "starke Passung"
+// Stufen (Match-Badge + CSS-Klasse), absteigend; passende Stufe = erste, die b.score erreicht.
+const PASSUNGS_STUFEN = [
+  { min: SCHWELLE_STARK,    klasse: "",        text: "starke Passung" },
+  { min: SCHWELLE_RELEVANT, klasse: "mittel",  text: "mittlere Passung" },
+  { min: 0,                 klasse: "schwach", text: "schwache Passung" }
+];
 
 const FRAGE_SCHRITTE = [
   { typ: "regler", reglerIndex: 0 },
@@ -997,17 +1007,15 @@ function matche() {
     }
     const motivationScore = motTotalKat > 0 ? motOverlap / motTotalKat : 0;
 
-    // 4) Gesamtscore
-    const gesamt = 0.6 * tagScore + 0.25 * umgebungScore + 0.15 * motivationScore;
+    const gesamt = W_TAGS * tagScore + W_UMGEBUNG * umgebungScore + W_MOTIVATION * motivationScore;
 
     return { beruf: b, score: gesamt, matchTags, tagScore, umgebungScore };
   });
 
   bewertet.sort((x, y) => y.score - x.score);
 
-  // Mindest-Schwelle: mindestens 2 passende Tags ODER Score >= 0.25.
-  // Sonst ist der Match zu schwach, um als echter Vorschlag zu gelten.
-  const relevante = bewertet.filter(b => b.matchTags.length >= 2 || b.score >= 0.25);
+  // Mindest-Schwelle: 2+ passende Tags ODER Score >= SCHWELLE_RELEVANT.
+  const relevante = bewertet.filter(b => b.matchTags.length >= 2 || b.score >= SCHWELLE_RELEVANT);
 
   // Diversifizieren:
   // - max. 2 pro Oberkategorie (erste Kategorie)
@@ -1092,26 +1100,54 @@ function rendereErgebnis() {
   }
 
   const top = matche();
+  const anzahl = top.length;
 
-  const maxScore = top.length > 0 ? top[0].score : 1;
+  // Sonderfall: Schueler:in hat weder Taetigkeiten noch Motivationen angekreuzt.
+  // Dann ist jeder Match Zufall – wir bitten ehrlich darum, zurueckzugehen.
+  const nichtsAngekreuzt = state.antworten.taetigkeiten.size === 0 && state.antworten.motivation.size === 0;
+  if (nichtsAngekreuzt) {
+    app.innerHTML = `
+      <section class="karte">
+        <h2>Wir brauchen ein paar Antworten von dir</h2>
+        <p>Du hast keine Tätigkeiten und keine Motivationen angekreuzt — dann können wir nichts vorschlagen, ohne zu raten.</p>
+        <p>Geh zurück und kreuze in den Fragen an, was dich anspricht. Es gibt keine richtigen oder falschen Antworten.</p>
+        <div class="ergebnis-aktionen">
+          <button class="btn btn-primary" id="btn-zurueck-fragen">Zurück zu den Fragen</button>
+          <button class="btn btn-sekundaer" id="btn-neu">Fragebogen neu starten</button>
+        </div>
+      </section>
+    `;
+    document.getElementById("btn-zurueck-fragen").addEventListener("click", () => {
+      state.screen = "frage";
+      state.frageIndex = Math.max(0, FRAGE_SCHRITTE.findIndex(s => s.typ === "taetigkeit"));
+      rendere();
+    });
+    document.getElementById("btn-neu").addEventListener("click", () => {
+      state = leererState();
+      rendere();
+    });
+    return;
+  }
+
+  const rohIndex = new Map((BERUFE_ROH || []).map(r => [r.id, r]));
   const karten = top.map((m, i) => {
     const b = m.beruf;
-    const roh = (BERUFE_ROH || []).find(r => r.id === b.id);
+    const roh = rohIndex.get(b.id);
     const beschreibung = roh ? roh.beschreibung : "";
     const dauer = b.dauer_jahre ? `${b.dauer_jahre} Jahre` : "";
     const seltenBadge = b.seltenheit === "selten"
       ? `<span class="badge-selten" title="Nur an wenigen Standorten in Deutschland ausbildbar">selten</span>`
       : "";
-    const prozent = Math.round((m.score / maxScore) * 100);
-    const stufeKlasse = m.score >= 0.40 ? "" : (m.score >= 0.25 ? "mittel" : "schwach");
-    const stufeText = m.score >= 0.40 ? "starke Passung" : (m.score >= 0.25 ? "mittlere Passung" : "schwache Passung");
+    // Prozent absolut: SCHWELLE_STARK (= "starke Passung") entspricht 100 %.
+    const prozent = Math.min(100, Math.round((m.score / SCHWELLE_STARK) * 100));
+    const stufe = PASSUNGS_STUFEN.find(s => m.score >= s.min);
     const topKlasse = i < 3 ? "top" : "";
     return `
       <article class="ergebnis-karte ${topKlasse}">
         <div class="rang">Vorschlag ${i + 1}</div>
         <h3>${escapeHtml(b.name)}${seltenBadge}</h3>
-        <div class="match-zeile" title="${stufeText}">
-          <div class="match-balken"><div class="match-fuellung ${stufeKlasse}" style="width: ${prozent}%"></div></div>
+        <div class="match-zeile" title="${stufe.text}">
+          <div class="match-balken"><div class="match-fuellung ${stufe.klasse}" style="width: ${prozent}%"></div></div>
           <div class="match-prozent">${prozent}%</div>
         </div>
         ${beschreibung ? `<p class="beschreibung">${escapeHtml(beschreibung)}</p>` : ""}
@@ -1126,8 +1162,8 @@ function rendereErgebnis() {
 
   app.innerHTML = `
     <section class="ergebnis-kopf">
-      <h1>Deine ${top.length} Vorschl${top.length === 1 ? "ag" : "äge"}</h1>
-      <p>${top.length >= 5
+      <h1>Deine ${anzahl} Vorschl${anzahl === 1 ? "ag" : "äge"}</h1>
+      <p>${anzahl >= 5
           ? "Das ist ein Spektrum — nicht DIE eine richtige Wahl. Schau, was dich anspricht und recherchiere weiter."
           : "Zu deinem Profil haben wir nur wenige klar passende Berufe gefunden. Nimm dir Zeit, sie genauer anzuschauen — oder geh zurück und kreuze mehr Tätigkeiten an."}</p>
     </section>
