@@ -145,7 +145,7 @@ async def laufe_schueler(browser, persona: Persona, seed: int) -> Ergebnis:
     erg = Ergebnis(persona=persona.name, seed=seed)
     for i in range(n):
         k = karten.nth(i)
-        name = (await k.locator("h3").inner_text()).replace("selten", "").strip()
+        name = (await k.locator("h2").inner_text()).replace("selten", "").strip()
         prozent_txt = await k.locator(".match-prozent").inner_text()
         prozent = int(prozent_txt.rstrip("%").strip())
         ist_top = "top" in (await k.get_attribute("class") or "")

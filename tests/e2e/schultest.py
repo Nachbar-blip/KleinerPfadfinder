@@ -270,7 +270,7 @@ async def laufe_schueler(browser, spec: SchuelerSpec) -> Ergebnis:
         erg = Ergebnis(gruppe=spec.gruppe, label=spec.label, seed=spec.seed)
         for i in range(n):
             k = karten.nth(i)
-            name_raw = await k.locator("h3").inner_text()
+            name_raw = await k.locator("h2").inner_text()
             name = name_raw.replace("selten", "").strip()
             if await k.locator(".match-prozent").count():
                 prozent = int((await k.locator(".match-prozent").inner_text()).rstrip("%").strip())
